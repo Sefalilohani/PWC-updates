@@ -10,17 +10,7 @@ REDASH_REPORT_URL = f"{REDASH_URL}/queries/{QUERY_ID}#2888"
 
 _raw_token    = os.environ["SLACK_BOT_TOKEN"]
 SLACK_TOKEN   = "xoxb" + _raw_token[4:31] + "bFqMGfkmHBzvLRtU1It2ptnt"
-SLACK_CHANNEL = "C096Y8SDH88"
-
-CC_USERS = [
-    "<@U026K56UJQL>",
-    "<@U06UBBS4QHJ>",
-    "<@UURRMS3MG>",
-    "<@U03GURJS6SZ>",
-    "<U08FT9QD9U3>",
-    "<U08HF79BTSM>",
-    "<U092KHH1MSQ>",
-]
+SLACK_CHANNEL = "C0AGRE19V6U"
 
 SEV_ORDER = ["0-1", "2 - 3", "4 - 5", "6 - 7", "8 - 14", "15 - 30", "31 - 90", "90+"]
 
@@ -129,15 +119,13 @@ def build_message(rows):
             bullet_lines.append(f"• {c12} checks has crossed 12+ days in {check}")
 
     bullets = "\n".join(bullet_lines) if bullet_lines else "• No checks have crossed 7+ days"
-    cc      = " ".join(CC_USERS)
 
     message = (
         f"*Update on PwC client In Progress checks*\n\n"
         f"{table}\n\n"
         f"{bullets}\n\n"
         f"*Total In-Progress checks: {total}*\n"
-        f"<{REDASH_REPORT_URL}|View full report on Redash>\n\n"
-        f"{cc}"
+        f"<{REDASH_REPORT_URL}|View full report on Redash>"
     )
     return message
 
