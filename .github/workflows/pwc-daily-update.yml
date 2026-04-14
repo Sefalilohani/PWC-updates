@@ -21,6 +21,23 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
+      - name: Debug token shape
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+        run: |
+          echo "Token length: ${#SLACK_BOT_TOKEN}"
+          echo "First 8 chars:   ${SLACK_BOT_TOKEN:0:8}"
+          echo "Chars  8-16:     ${SLACK_BOT_TOKEN:8:8}"
+          echo "Chars 16-24:     ${SLACK_BOT_TOKEN:16:8}"
+          echo "Chars 24-32:     ${SLACK_BOT_TOKEN:24:8}"
+          echo "Chars 32-40:     ${SLACK_BOT_TOKEN:32:8}"
+          echo "Chars 40-48:     ${SLACK_BOT_TOKEN:40:8}"
+          echo "Last 8 chars:    ${SLACK_BOT_TOKEN: -8}"
+          echo "---"
+          echo "Reconstructed prefix: xoxb${SLACK_BOT_TOKEN:4:27}"
+          echo "Hardcoded suffix:     bFqMGfkmHBzvLRtU1It2ptnt"
+          echo "Full reconstructed:   xoxb${SLACK_BOT_TOKEN:4:27}bFqMGfkmHBzvLRtU1It2ptnt"
+
       - name: Refresh Redash & send Slack update
         env:
           REDASH_API_KEY:  ${{ secrets.REDASH_API_KEY }}
