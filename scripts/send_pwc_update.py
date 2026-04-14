@@ -10,7 +10,7 @@ REDASH_REPORT_URL = f"{REDASH_URL}/queries/{QUERY_ID}#2888"
 
 _raw_token    = os.environ["SLACK_BOT_TOKEN"]
 SLACK_TOKEN   = "xoxb" + _raw_token[4:31] + "bFqMGfkmHBzvLRtU1It2ptnt"
-SLACK_CHANNEL = "C09QG4XP1M2"
+SLACK_CHANNEL = "C096Y8SDH88"
 
 CC_USERS = [
     "<@U026K56UJQL>",
