@@ -60,29 +60,55 @@ def format_pivot_table(pivot):
     combos = sorted(set(c for sev_data in pivot.values() for c in sev_data))
     sevs   = [s for s in SEV_ORDER if s in pivot]
 
-    sev_w = 10
-    col_w = max(10, max(len(c) for c in combos) + 2)
-    tot_w = 8
+    sev_short = {
+        "0-1": "0-1", "2 - 3": "2-3", "4 - 5": "4-5", "6 - 7": "6-7",
+        "8 - 14": "8-14", "15 - 30": "15-30", "31 - 90": "31-90", "90+": "90+",
+    }
 
-    header = f"{'Severity':<{sev_w}}" + "".join(f"{c:>{col_w}}" for c in combos) + f"{'Total':>{tot_w}}"
+    def abbrev(combo):
+        check, _, vtype = combo.partition(" | ")
+        short_check = {
+            "Universal Account Number Check":              "UAN Check",
+            "Moonlighting Check":                          "Moonlighting",
+            "University Recognition check":                "Univ Recognition",
+            "Social Media Lite":                           "Social Media",
+            "Police Clearance Certificate Acknowledgement":"PCC Acknowledgement",
+            "Police Clearance Certificate":                "PCC",
+        }.get(check, check)
+        short_vtype = {
+            "DIGITAL":                        "Digital",
+            "PHYSICAL":                       "Physical",
+            "OFFICIAL":                       "Official",
+            "REGIONAL_PARTNER":               "Regional",
+            "UNIVERSAL_ACCOUNT_NUMBER_CHECK": "UAN",
+        }.get(vtype, "")
+        return f"{short_check} ({short_vtype})" if short_vtype else short_check
+
+    labels = [abbrev(c) for c in combos]
+    lw = max(25, max(len(l) for l in labels) + 2)
+    sw = 7
+    tw = 7
+
+    sev_hdrs = [sev_short.get(s, s) for s in sevs]
+    header = f"{'Check':<{lw}}" + "".join(f"{h:>{sw}}" for h in sev_hdrs) + f"{'Total':>{tw}}"
     sep    = "-" * len(header)
 
     lines = ["```", header, sep]
     grand_total = 0
 
-    for sev in sevs:
-        row_total = sum(pivot[sev].values())
+    for label, combo in zip(labels, combos):
+        row_total = sum(pivot[s].get(combo, 0) for s in sevs)
         grand_total += row_total
         cells = "".join(
-            f"{pivot[sev].get(c, '-'):>{col_w}}" for c in combos
+            f"{pivot[s].get(combo, 0) or '-':>{sw}}" for s in sevs
         )
-        lines.append(f"{sev:<{sev_w}}{cells}{row_total:>{tot_w}}")
+        lines.append(f"{label:<{lw}}{cells}{row_total:>{tw}}")
 
     lines.append(sep)
-    col_totals = "".join(
-        f"{sum(pivot[s].get(c, 0) for s in sevs):>{col_w}}" for c in combos
+    col_tots = "".join(
+        f"{sum(pivot[s].get(c, 0) for c in combos):>{sw}}" for s in sevs
     )
-    lines.append(f"{'Total':<{sev_w}}{col_totals}{grand_total:>{tot_w}}")
+    lines.append(f"{'Total':<{lw}}{col_tots}{grand_total:>{tw}}")
     lines.append("```")
 
     return "\n".join(lines), grand_total
